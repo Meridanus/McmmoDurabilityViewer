@@ -1,6 +1,7 @@
 package com.notker.mcmmo_durability_viewer.mixin;
 
 import com.notker.mcmmo_durability_viewer.McmmoDurabilityViewer;
+import com.notker.mcmmo_durability_viewer.config.McmmoDurabilityViewerConfig;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -17,7 +18,11 @@ public class ItemMixin {
     public void getItemBarStep(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         NbtCompound nbt = stack.getNbt();
 
-        if (nbt != null && nbt.getInt(McmmoDurabilityViewer.MAX_DURABILITY_KEY) > 0) {
+        McmmoDurabilityViewerConfig config = McmmoDurabilityViewer.config;
+        // CHeck if the config is available, else use the default value
+        String maxDurabilityTag = config != null ? config.durabilityBar.MAX_DURABILITY_TAG : McmmoDurabilityViewer.DEFAULT_MAX_DURABILITY_TAG;
+
+        if (nbt != null && nbt.getInt(maxDurabilityTag) > 0) {
             cir.setReturnValue(Math.round(13.0f - (float)stack.getDamage() * 13.0f / (float)stack.getMaxDamage()));
             cir.cancel();
         }
@@ -28,7 +33,11 @@ public class ItemMixin {
     public void getItemBarColor(ItemStack stack, CallbackInfoReturnable<Integer> cir) {
         NbtCompound nbt = stack.getOrCreateNbt();
 
-        if (nbt != null && nbt.getInt(McmmoDurabilityViewer.MAX_DURABILITY_KEY) > 0) {
+        McmmoDurabilityViewerConfig config = McmmoDurabilityViewer.config;
+        // CHeck if the config is available, else use the default value
+        String maxDurabilityTag = config != null ? config.durabilityBar.MAX_DURABILITY_TAG : McmmoDurabilityViewer.DEFAULT_MAX_DURABILITY_TAG;
+
+        if (nbt != null && nbt.getInt(maxDurabilityTag) > 0) {
 
             float f = Math.max(0.0f, ( (float)stack.getMaxDamage() - (float)stack.getDamage()) /  (float)stack.getMaxDamage());
 

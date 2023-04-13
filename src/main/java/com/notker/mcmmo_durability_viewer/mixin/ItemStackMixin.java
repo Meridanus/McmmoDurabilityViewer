@@ -2,6 +2,7 @@ package com.notker.mcmmo_durability_viewer.mixin;
 
 
 import com.notker.mcmmo_durability_viewer.McmmoDurabilityViewer;
+import com.notker.mcmmo_durability_viewer.config.McmmoDurabilityViewerConfig;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +20,12 @@ public abstract class ItemStackMixin {
 	@Inject(at = @At("HEAD"), method = "isDamageable", cancellable = true)
 	public void isDamageable(CallbackInfoReturnable<Boolean> cir) {
 		NbtCompound nbt = getNbt();
-		if (nbt != null && nbt.getInt(McmmoDurabilityViewer.MAX_DURABILITY_KEY) > 0) {
+
+		McmmoDurabilityViewerConfig config = McmmoDurabilityViewer.config;
+		// CHeck if the config is available, else use the default value
+		String maxDurabilityTag = config != null ? config.durabilityBar.MAX_DURABILITY_TAG : McmmoDurabilityViewer.DEFAULT_MAX_DURABILITY_TAG;
+
+		if (nbt != null && nbt.getInt(maxDurabilityTag) > 0) {
 			cir.setReturnValue(true);
 			cir.cancel();
 		}
@@ -29,8 +35,13 @@ public abstract class ItemStackMixin {
 	@Inject(at = @At("HEAD"), method = "getMaxDamage", cancellable = true)
 	public void getMaxDamage(CallbackInfoReturnable<Integer> cir) {
 		NbtCompound nbt = getNbt();
-		if (nbt != null && nbt.getInt(McmmoDurabilityViewer.MAX_DURABILITY_KEY) > 0) {
-			cir.setReturnValue(nbt.getInt(McmmoDurabilityViewer.MAX_DURABILITY_KEY));
+
+		McmmoDurabilityViewerConfig config = McmmoDurabilityViewer.config;
+		// CHeck if the config is available, else use the default value
+		String maxDurabilityTag = config != null ? config.durabilityBar.MAX_DURABILITY_TAG : McmmoDurabilityViewer.DEFAULT_MAX_DURABILITY_TAG;
+
+		if (nbt != null && nbt.getInt(maxDurabilityTag) > 0) {
+			cir.setReturnValue(nbt.getInt(maxDurabilityTag));
 			cir.cancel();
 		}
 		// Default Behaviour
@@ -39,10 +50,16 @@ public abstract class ItemStackMixin {
 	@Inject(at = @At("HEAD"), method = "getDamage", cancellable = true)
 	public void getDamage(CallbackInfoReturnable<Integer> cir) {
 		NbtCompound nbt = getNbt();
-		if (nbt != null && nbt.getInt(McmmoDurabilityViewer.MAX_DURABILITY_KEY) > 0) {
 
-			if (nbt.contains(McmmoDurabilityViewer.DURABILITY_KEY)) {
-				cir.setReturnValue(nbt.getInt(McmmoDurabilityViewer.MAX_DURABILITY_KEY) - nbt.getInt(McmmoDurabilityViewer.DURABILITY_KEY));
+		McmmoDurabilityViewerConfig config = McmmoDurabilityViewer.config;
+		// CHeck if the config is available, else use the default value
+		String maxDurabilityTag = config != null ? config.durabilityBar.MAX_DURABILITY_TAG : McmmoDurabilityViewer.DEFAULT_MAX_DURABILITY_TAG;
+		String durabilityTag = config != null ? config.durabilityBar.DURABILITY_TAG : McmmoDurabilityViewer.DEFAULT_DURABILITY_TAG;
+
+		if (nbt != null && nbt.getInt(maxDurabilityTag) > 0) {
+
+			if (nbt.contains(durabilityTag)) {
+				cir.setReturnValue(nbt.getInt(maxDurabilityTag) - nbt.getInt(durabilityTag));
 			} else {
 				cir.setReturnValue(0);
 			}
@@ -55,10 +72,16 @@ public abstract class ItemStackMixin {
 	@Inject(at = @At("HEAD"), method = "isDamaged", cancellable = true)
 	public void isDamaged(CallbackInfoReturnable<Boolean> cir) {
 		NbtCompound nbt = getNbt();
-		if (nbt != null && nbt.getInt(McmmoDurabilityViewer.MAX_DURABILITY_KEY) > 0) {
 
-			if (nbt.contains(McmmoDurabilityViewer.DURABILITY_KEY)) {
-				cir.setReturnValue(nbt.getInt(McmmoDurabilityViewer.DURABILITY_KEY) < nbt.getInt(McmmoDurabilityViewer.MAX_DURABILITY_KEY));
+		McmmoDurabilityViewerConfig config = McmmoDurabilityViewer.config;
+		// CHeck if the config is available, else use the default value
+		String maxDurabilityTag = config != null ? config.durabilityBar.MAX_DURABILITY_TAG : McmmoDurabilityViewer.DEFAULT_MAX_DURABILITY_TAG;
+		String durabilityTag = config != null ? config.durabilityBar.DURABILITY_TAG : McmmoDurabilityViewer.DEFAULT_DURABILITY_TAG;
+
+		if (nbt != null && nbt.getInt(maxDurabilityTag) > 0) {
+
+			if (nbt.contains(durabilityTag)) {
+				cir.setReturnValue(nbt.getInt(durabilityTag) < nbt.getInt(maxDurabilityTag));
 			} else {
 				cir.setReturnValue(false);
 			}
