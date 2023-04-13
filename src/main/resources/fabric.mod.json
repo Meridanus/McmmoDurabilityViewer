@@ -4,12 +4,12 @@
   "version": "${version}",
 
   "name": "Mcmmo Durability Viewer",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "This mod allows players on Servers with the McMMO Plugin to see Durability Bars and Available Max Consumes on the Item itself instead of only the tooltip.\nYou can change the NBT Tag's and the color for the Consume Value to allow support for other Plugins/Modpacks.",
   "authors": [
     "Meridanus aka Notker!"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/mcmmo-durability-viewer",
     "sources": "https://github.com/Meridanus/McmmoDurabilityViewer",
     "issues": "https://github.com/Meridanus/McmmoDurabilityViewere/issues"
   },
