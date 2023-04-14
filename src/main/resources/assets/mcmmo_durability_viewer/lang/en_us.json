@@ -8,6 +8,6 @@
   "text.autoconfig.mcmmo_durability_viewer.option.consumeValue": "Consume Options",
   "text.autoconfig.mcmmo_durability_viewer.option.consumeValue.MAX_CONSUME_TAG": "Consume NBT Tag",
   "text.autoconfig.mcmmo_durability_viewer.option.consumeValue.FULL_CONSUME_VALUE": "Full Consume At",
-  "text.autoconfig.mcmmo_durability_viewer.option.consumeValue.STATIC_COLOR": "Use Single Color",
-  "text.autoconfig.mcmmo_durability_viewer.option.consumeValue.SINGLE_COLOR": "Color"
+  "text.autoconfig.mcmmo_durability_viewer.option.consumeValue.SINGLE_COLOR": "Use Single Color",
+  "text.autoconfig.mcmmo_durability_viewer.option.consumeValue.CONSUME_COLOR": "Color"
 }
