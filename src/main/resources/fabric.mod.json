@@ -27,7 +27,7 @@
     ]
   },
   "mixins": [
-    "modid.mixins.json"
+    "mcmmo_durability_viewer.mixins.json"
   ],
 
   "depends": {
