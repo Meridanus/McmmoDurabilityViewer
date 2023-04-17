@@ -10,18 +10,17 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
-    @Shadow public float zOffset;
 
-    @Inject(at = @At("HEAD"), method = "renderGuiItemOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
-    public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, String countLabel, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "renderGuiItemOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
+    public void renderGuiItemOverlay(MatrixStack matrices, TextRenderer textRenderer, ItemStack stack, int x, int y, @Nullable String countLabel, CallbackInfo ci) {
         NbtCompound nbt = stack.getOrCreateNbt();
 
         McmmoDurabilityViewerConfig config = McmmoDurabilityViewer.config;
@@ -34,12 +33,12 @@ public abstract class ItemRendererMixin {
         Integer consumes = nbt.getInt(maxConsumeTag);
 
         if (!stack.isEmpty() && consumes > 0) {
-            MatrixStack matrixStack = new MatrixStack();
+            matrices.push();
 
             if (stack.getCount() == 1 ) {
                 String string = String.valueOf(consumes);
 
-                matrixStack.translate(0.0D, 0.0D, (this.zOffset + 200.0F));
+                matrices.translate(0.0F, 0.0F, 200.0F);
 
                 VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 
@@ -50,11 +49,11 @@ public abstract class ItemRendererMixin {
                     color = (MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F));
                 }
 
-                renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), color, true, matrixStack.peek().getPositionMatrix(), immediate, false, 0, 15728880);
+                textRenderer.draw(string, (float)(x + 19 - 2 - textRenderer.getWidth(string)), (float)(y + 6 + 3), color, true, matrices.peek().getPositionMatrix(), immediate, TextRenderer.TextLayerType.NORMAL, 0, 15728880);
 
                 immediate.draw();
             }
-
+            matrices.pop();
         }
 
     }
