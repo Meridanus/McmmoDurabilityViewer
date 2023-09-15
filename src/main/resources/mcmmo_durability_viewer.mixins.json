@@ -8,7 +8,7 @@
   "client": [
     "ItemStackMixin",
     "ItemMixin",
-    "ItemRendererMixin"
+    "DrawItemInSlotMixin"
   ],
   "injectors": {
     "defaultRequire": 1

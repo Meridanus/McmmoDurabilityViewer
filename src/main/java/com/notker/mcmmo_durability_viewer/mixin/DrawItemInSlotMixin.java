@@ -3,32 +3,49 @@ package com.notker.mcmmo_durability_viewer.mixin;
 import com.notker.mcmmo_durability_viewer.McmmoDurabilityViewer;
 import com.notker.mcmmo_durability_viewer.config.McmmoDurabilityViewerConfig;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ItemRenderer.class)
-public abstract class ItemRendererMixin {
+@Mixin(DrawContext.class)
+public abstract class DrawItemInSlotMixin {
 
-    @Inject(at = @At("HEAD"), method = "renderGuiItemOverlay(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
-    public void renderGuiItemOverlay(MatrixStack matrices, TextRenderer textRenderer, ItemStack stack, int x, int y, @Nullable String countLabel, CallbackInfo ci) {
+    @Final
+    @Shadow private MatrixStack matrices;
+
+    @Inject(at = @At("HEAD"), method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V")
+    public void drawItemInSlot(TextRenderer textRenderer, ItemStack stack, int x, int y, @Nullable String countOverride, CallbackInfo ci) {
         NbtCompound nbt = stack.getOrCreateNbt();
 
         McmmoDurabilityViewerConfig config = McmmoDurabilityViewer.config;
-        // CHeck if the config is available, else use the default value
-        String maxConsumeTag = config != null ? config.consumeValue.MAX_CONSUME_TAG : McmmoDurabilityViewer.DEFAULT_MAX_CONSUME_TAG;
-        Integer fullConsumeValue = config != null ? config.consumeValue.FULL_CONSUME_VALUE : McmmoDurabilityViewer.DEFAULT_FULL_CONSUME_VALUE;
-        boolean staticColor = config != null ? config.consumeValue.SINGLE_COLOR : McmmoDurabilityViewer.DEFAULT_SINGLE_COLOR;
-        Integer color = config != null ? config.consumeValue.CONSUME_COLOR : McmmoDurabilityViewer.DEFAULT_CONSUME_COLOR;
+
+        String maxConsumeTag;
+        Integer color, fullConsumeValue;
+        boolean staticColor;
+        // Check if the config is available, else use the default value
+        if (config != null) {
+            maxConsumeTag = config.consumeValue.MAX_CONSUME_TAG;
+            fullConsumeValue = config.consumeValue.FULL_CONSUME_VALUE;
+            staticColor = config.consumeValue.SINGLE_COLOR;
+            color = config.consumeValue.CONSUME_COLOR;
+        } else {
+            maxConsumeTag = McmmoDurabilityViewer.DEFAULT_MAX_CONSUME_TAG;
+            fullConsumeValue = McmmoDurabilityViewer.DEFAULT_FULL_CONSUME_VALUE;
+            staticColor = McmmoDurabilityViewer.DEFAULT_SINGLE_COLOR;
+            color = McmmoDurabilityViewer.DEFAULT_CONSUME_COLOR;
+        }
+
 
         Integer consumes = nbt.getInt(maxConsumeTag);
 
@@ -38,7 +55,7 @@ public abstract class ItemRendererMixin {
             if (stack.getCount() == 1 ) {
                 String string = String.valueOf(consumes);
 
-                matrices.translate(0.0F, 0.0F, 200.0F);
+                this.matrices.translate(0.0F, 0.0F, 200.0F);
 
                 VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 
